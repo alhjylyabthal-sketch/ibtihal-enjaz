@@ -1,7 +1,7 @@
 // Service worker dedicated to the professional portfolio only.
 // No private records or authenticated/cloud responses are cached.
-const CACHE_NAME='ibtihal-enjaz-standalone-v1';
-const SHELL=['./','./index.html','./cloud.js','./luxury-ui.css','./luxury-ui.js','./luxury-ornaments.svg','./approved-ornaments.webp','./approved-school-logo.webp','./final-cover.css','./final-cover.js','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
+const CACHE_NAME='ibtihal-enjaz-standalone-v2';
+const SHELL=['./','./index.html','./cloud.js','./luxury-ui.css','./luxury-ui.js','./luxury-ornaments.svg','./approved-ornaments.webp','./approved-school-logo.webp','./final-cover.css','./final-cover.js','./manifest.webmanifest','./assets/enjaz-approved-192.png','./assets/enjaz-approved-512.png'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(n=>n.startsWith('ibtihal-enjaz-standalone-')&&n!==CACHE_NAME).map(n=>caches.delete(n)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{
