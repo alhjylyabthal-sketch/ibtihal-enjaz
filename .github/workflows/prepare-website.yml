@@ -1,0 +1,60 @@
+name: تجهيز ملف الإنجاز المستقل
+on:
+  push:
+    paths:
+      - '.github/workflows/prepare-website.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout independent repository
+        uses: actions/checkout@v4
+
+      - name: Copy verified portfolio files and all original images
+        run: |
+          set -euo pipefail
+          git clone --quiet --depth 1 --branch main https://github.com/alhjylyabthal-sketch/my-portfolio.git /tmp/my-portfolio-source
+          test -f /tmp/my-portfolio-source/portfolio/index.html
+          test -f /tmp/my-portfolio-source/portfolio/cloud.js
+          test -f /tmp/my-portfolio-source/portfolio/approved-school-logo.webp
+          cp -a /tmp/my-portfolio-source/portfolio/. ./
+          python3 - <<'PY'
+          import json, pathlib
+          manifest_path=pathlib.Path('manifest.webmanifest')
+          manifest=json.loads(manifest_path.read_text(encoding='utf-8'))
+          manifest.update({
+              'id': '/ibtihal-enjaz/',
+              'name': 'ملف الإنجاز المهني | ابتهال الحجيلي',
+              'short_name': 'إنجاز ابتهال',
+              'start_url': './index.html',
+              'scope': './'
+          })
+          manifest_path.write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          p=pathlib.Path('index.html')
+          html=p.read_text(encoding='utf-8')
+          html=html.replace('manifest.webmanifest?v=independent-2','manifest.webmanifest?v=standalone-1')
+          p.write_text(html,encoding='utf-8')
+          sw=pathlib.Path('sw.js')
+          code=sw.read_text(encoding='utf-8').replace('enjaz-portfolio-v1','ibtihal-enjaz-standalone-v1').replace("n.startsWith('enjaz-portfolio-')","n.startsWith('ibtihal-enjaz-standalone-')")
+          sw.write_text(code,encoding='utf-8')
+          required=['index.html','cloud.js','final-cover.css','final-cover.js','luxury-ui.css','luxury-ui.js','luxury-ornaments.svg','approved-ornaments.webp','approved-school-logo.webp','icon-192.png','icon-512.png','manifest.webmanifest','sw.js']
+          assert all(pathlib.Path(x).is_file() for x in required), 'Missing site file'
+          assert '/ibtihal-enjaz/' in manifest['id']
+          assert 'أكاديمية الرياضيات الصغيرة' not in manifest['name']
+          print('Validated independent Enjaz files:',len(required))
+          PY
+
+      - name: Commit website and assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html cloud.js final-cover.css final-cover.js luxury-ui.css luxury-ui.js luxury-ornaments.svg approved-ornaments.webp approved-school-logo.webp icon-192.png icon-512.png manifest.webmanifest sw.js
+          if ! git diff --cached --quiet; then
+            git commit -m "Copy complete professional portfolio to independent site"
+            git push
+          fi
