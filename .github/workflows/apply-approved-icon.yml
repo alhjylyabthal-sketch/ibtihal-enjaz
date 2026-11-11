@@ -1,0 +1,52 @@
+name: تثبيت هوية أيقونة إنجاز المعتمدة
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-approved-icon.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  apply-icon:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare icons and references
+        run: |
+          python3 -m pip install --quiet pillow
+          python3 - <<'PY'
+          import json,pathlib
+          from PIL import Image,ImageFilter
+          source=pathlib.Path('assets/enjaz-approved-source.webp')
+          assert source.exists(), 'Approved Enjaz artwork is absent'
+          artwork=Image.open(source).convert('RGB')
+          for size in (192,512):
+              image=artwork.resize((size,size),Image.Resampling.LANCZOS).filter(ImageFilter.UnsharpMask(radius=1.2,percent=95))
+              image.save(f'assets/enjaz-approved-{size}.png',format='PNG',optimize=True)
+          p=pathlib.Path('manifest.webmanifest')
+          doc=json.loads(p.read_text(encoding='utf-8'))
+          assert doc.get('id')=='/ibtihal-enjaz/', 'Never change Enjaz app identity'
+          doc['icons']=[{'src':f'./assets/enjaz-approved-{size}.png','sizes':f'{size}x{size}','type':'image/png','purpose':'any'} for size in (192,512)]
+          p.write_text(json.dumps(doc,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          page=pathlib.Path('index.html')
+          html=page.read_text(encoding='utf-8')
+          html=html.replace('manifest.webmanifest?v=standalone-1','manifest.webmanifest?v=approved-icon-2')
+          html=html.replace('href="icon-192.png"','href="./assets/enjaz-approved-192.png?v=2"')
+          page.write_text(html,encoding='utf-8')
+          sw=pathlib.Path('sw.js')
+          script=sw.read_text(encoding='utf-8')
+          script=script.replace("const CACHE_NAME='ibtihal-enjaz-standalone-v1'","const CACHE_NAME='ibtihal-enjaz-standalone-v2'")
+          script=script.replace("'./icon-192.png','./icon-512.png'","'./assets/enjaz-approved-192.png','./assets/enjaz-approved-512.png'")
+          sw.write_text(script,encoding='utf-8')
+          assert 'enjaz-approved-192.png' in html
+          assert len(doc['icons'])==2
+          PY
+      - name: Commit only Enjaz appearance changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/enjaz-approved-192.png assets/enjaz-approved-512.png manifest.webmanifest index.html sw.js
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish approved green-and-gold Enjaz home screen icon"
+            git push
+          fi
