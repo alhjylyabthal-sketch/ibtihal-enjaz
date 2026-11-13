@@ -53,6 +53,7 @@ const metric=document.getElementById('luxMetricRows');
 if(metric)metric.innerHTML=B.map((label,i)=>'<div class="lux-metric-row"><span>'+esc(label)+'</span><strong>'+entries.filter(e=>Array.isArray(e.bands)&&e.bands.includes(i)).length+' شاهد</strong></div>').join('');
 }
 document.querySelectorAll('[data-lux-nav]').forEach(b=>b.addEventListener('click',()=>nav(b.dataset.luxNav)));
+const libraryActions=document.querySelector('#luxLibraryPage .lux-action-bar');if(libraryActions&&!document.getElementById('luxSavePrepared')){const b=document.createElement('button');b.id='luxSavePrepared';b.type='button';b.textContent='حفظ شاهدي الاحتماء والتحفيز (٢)';b.style.background='#075a54';b.onclick=()=>document.getElementById('savePreparedEvidence')?.click();libraryActions.append(b);}
 document.getElementById('luxCreateEvidence').addEventListener('click',()=>openForm());
 document.getElementById('luxAddDevelopment').addEventListener('click',()=>{openForm();document.querySelector('#checks input[value="1"]')?.click()});
 document.getElementById('luxPrintReport').addEventListener('click',()=>document.getElementById('printBtn').click());
