@@ -118,3 +118,18 @@ body.lux-mode .stats{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap
 }
 @media(max-width:400px){body.lux-mode .luxury-home{padding:47px 21px 54px!important}body.lux-mode .fc-statement{min-height:114px;padding:29px 11px 15px;margin-bottom:20px}body.lux-mode .fc-statement p{font-size:15px;line-height:1.8}body.lux-mode .fc-hero-title{font-size:27px}body.lux-mode .fc-school{font-size:11px;margin-bottom:12px}body.lux-mode .fc-gold-rule{margin-bottom:22px}body.lux-mode #overview .grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-height:660px){body.lux-mode .luxury-home{padding-top:34px!important}body.lux-mode .fc-home-logo{height:49px;width:49px}body.lux-mode .fc-statement{min-height:102px}body.lux-mode .fc-statement+.fc-statement{margin-top:24px}}
+/* Professional A4 portfolio export: screen styling remains unchanged. */
+@page{size:A4 portrait;margin:17mm 16mm 18mm}
+@media print{
+ html,body{direction:rtl!important;font-family:Tahoma,Arial,sans-serif!important;font-size:11pt!important;line-height:1.75!important;color:#163d39!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ body.lux-mode .main{width:100%!important;max-width:none!important;padding:0!important;margin:0!important}
+ .fc-print-letterhead{page-break-after:avoid;break-after:avoid;padding-bottom:10px!important;margin-bottom:16px!important}
+ .fc-print-letterhead strong{font-size:13pt;color:#005452}
+ body.lux-mode #printEntries .evidence{border:1px solid #cbb279!important;border-right:4px solid #00645b!important;border-radius:5px!important;margin:0 0 13mm!important;padding:7mm!important;break-inside:avoid-page;page-break-inside:avoid;overflow-wrap:anywhere}
+ body.lux-mode #printEntries .evidence h3{font-size:15pt!important;color:#005452!important;margin:0 0 3mm!important;break-after:avoid}
+ body.lux-mode #printEntries .evidence p{font-size:10.5pt!important;line-height:1.85!important;orphans:3;widows:3}
+ body.lux-mode #printEntries .evidence .tag{display:inline-block!important;border:1px solid #cbb279!important;padding:1mm 2mm!important;margin:1mm!important;border-radius:3px!important}
+ body.lux-mode #printEntries .evidence .analysis{break-inside:avoid-page}
+ body.lux-mode #printEntries .attachments img{max-width:42mm!important;max-height:42mm!important;object-fit:contain!important}
+ body.lux-mode #printEntries .evidence .actions,body.lux-mode #printEntries .evidence button,body.lux-mode #printEntries .analysis{display:none!important}
+}
