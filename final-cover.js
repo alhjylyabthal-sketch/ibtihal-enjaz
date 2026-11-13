@@ -1,5 +1,6 @@
 (function(){
 'use strict';
+const legacyFloating=document.querySelector('a[href="./reports/followup-evidence.html"][style*="position:fixed"]');if(legacyFloating)legacyFloating.remove();
 const home=document.getElementById('luxuryHome');
 if(!home||typeof window.luxNav!=='function')return;
 const navigation=(page)=>{
